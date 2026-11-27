@@ -1,0 +1,2 @@
+# Ativos Locais: models/buildings
+Coloque arquivos `.glb` / `.gltf` desta categoria aqui e registre-os em `src/engine/assetLoader.ts`.

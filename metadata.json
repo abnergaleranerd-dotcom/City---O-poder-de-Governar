@@ -1,0 +1,6 @@
+{
+  "name": "CITY TYCOON 4D — O Poder de Governar",
+  "description": "Simulador estratégico 3D de planejamento urbano, economia municipal, mercado imobiliário e política em tempo real.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

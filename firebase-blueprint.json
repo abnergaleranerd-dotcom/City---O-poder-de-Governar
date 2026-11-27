@@ -1,0 +1,176 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Private mayor profile for an authenticated player.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "CitySave": {
+      "title": "CitySave",
+      "description": "Cloud save slot for a player's City Tycoon 4D simulation state.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "cityName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "mayorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "population": {
+          "type": "number"
+        },
+        "treasury": {
+          "type": "number"
+        },
+        "popularity": {
+          "type": "number"
+        },
+        "day": {
+          "type": "number"
+        },
+        "month": {
+          "type": "number"
+        },
+        "year": {
+          "type": "number"
+        },
+        "developmentLevel": {
+          "type": "number"
+        },
+        "stateSnapshot": {
+          "type": "object",
+          "description": "Structured simulation snapshot map containing tiles, economy, politics, citizens, and news."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "cityName",
+        "mayorName",
+        "population",
+        "treasury",
+        "popularity",
+        "day",
+        "month",
+        "year",
+        "developmentLevel",
+        "stateSnapshot",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CityLegacy": {
+      "title": "CityLegacy",
+      "description": "End-of-term historical report for a finished City Tycoon 4D administration.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "cityName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "mayorName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "outcome": {
+          "type": "string",
+          "enum": ["reelected", "election_loss", "impeached", "resigned", "collapsed"]
+        },
+        "finalPopulation": {
+          "type": "number"
+        },
+        "finalTreasury": {
+          "type": "number"
+        },
+        "finalPopularity": {
+          "type": "number"
+        },
+        "yearsServed": {
+          "type": "number"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerId",
+        "cityName",
+        "mayorName",
+        "outcome",
+        "finalPopulation",
+        "finalTreasury",
+        "finalPopularity",
+        "yearsServed",
+        "summary",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Private mayor user profile documents."
+    },
+    "/cities/{cityId}": {
+      "schema": { "$ref": "#/entities/CitySave" },
+      "description": "Saved city simulation states owned by authenticated mayors."
+    },
+    "/legacies/{legacyId}": {
+      "schema": { "$ref": "#/entities/CityLegacy" },
+      "description": "Completed administration legacy reports owned by authenticated mayors."
+    }
+  }
+}
