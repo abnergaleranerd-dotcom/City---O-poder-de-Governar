@@ -1,7 +1,6 @@
 import {
   collection,
   deleteDoc,
-  documentId,
   doc,
   getDoc,
   getDocs,
@@ -181,13 +180,14 @@ export async function saveCityToCloud(params: {
   const path = `cities/${safeId}`;
   const docRef = doc(db, 'cities', safeId);
 
+  let operation = OperationType.LIST;
   try {
-    // Query by owner instead of reading a missing document: the security
-    // rules can authorize this query even before the first save exists.
+    // Keep this a collection query scoped to the authenticated owner.
+    // Resolve the slot locally so a nonexistent document never needs an
+    // ownership check against resource.data.
     const existingSaves = await getDocs(query(
       collection(db, 'cities'),
       where('ownerId', '==', user.uid),
-      where(documentId(), '==', safeId),
     ));
     const basePayload = {
       cityName: clampString(params.cityName, 80, 'Nova Cidade'),
@@ -203,9 +203,11 @@ export async function saveCityToCloud(params: {
       updatedAt: serverTimestamp(),
     };
 
-    if (!existingSaves.empty) {
+    if (existingSaves.docs.some((saved) => saved.id === safeId)) {
+      operation = OperationType.UPDATE;
       await updateDoc(docRef, basePayload);
     } else {
+      operation = OperationType.CREATE;
       await setDoc(docRef, {
         ownerId: user.uid,
         ...basePayload,
@@ -214,7 +216,7 @@ export async function saveCityToCloud(params: {
     }
     return safeId;
   } catch (error) {
-    handleFirestoreError(error, OperationType.WRITE, path);
+    handleFirestoreError(error, operation, path);
   }
 }
 
