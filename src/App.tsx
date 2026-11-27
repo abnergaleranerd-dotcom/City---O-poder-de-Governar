@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { saveCityLocal } from './services/persistence';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { CityViewport } from './engine/CityViewport';
 import { TopBar } from './components/TopBar';
@@ -34,6 +36,25 @@ function DiagnosticsHud() {
 }
 
 export default function App() {
+  useEffect(() => {
+    const save = () => {
+      const state = useGameStore.getState();
+      if (!saveCityLocal(state.exportSnapshot())) {
+        state.showToast('Não foi possível salvar neste navegador. Verifique o espaço disponível ou salve na nuvem.', 'error');
+      }
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') save();
+    };
+    const timer = window.setInterval(save, 15000);
+    window.addEventListener('pagehide', save);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('pagehide', save);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, []);
   return (
     <ErrorBoundary>
       <main className="relative w-screen h-screen overflow-hidden bg-slate-950">

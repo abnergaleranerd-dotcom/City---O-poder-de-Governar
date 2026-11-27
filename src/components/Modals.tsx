@@ -353,13 +353,16 @@ export const GameModals: React.FC = () => {
                 <div>
                   <div className="font-semibold text-slate-100">Salvamento Local Automático</div>
                   <div className="text-xs text-slate-400">
-                    Gravado mensalmente no navegador para retomada imediata.
+                    Gravado a cada 15 segundos e ao sair da página, somente neste navegador.
                   </div>
                 </div>
                 <button
                   onClick={() => {
-                    saveCityLocal(exportSnapshot());
-                    showToast('Progresso salvo localmente!', 'success');
+                    const saved = saveCityLocal(exportSnapshot());
+                    showToast(
+                      saved ? 'Progresso salvo neste navegador!' : 'Não foi possível salvar. Verifique o espaço do navegador ou salve na nuvem.',
+                      saved ? 'success' : 'error',
+                    );
                   }}
                   className="flex items-center gap-1.5 px-3 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold"
                 >
