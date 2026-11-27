@@ -1,6 +1,7 @@
 import {
   collection,
   deleteDoc,
+  documentId,
   doc,
   getDoc,
   getDocs,
@@ -181,7 +182,13 @@ export async function saveCityToCloud(params: {
   const docRef = doc(db, 'cities', safeId);
 
   try {
-    const existingSnap = await getDoc(docRef);
+    // Query by owner instead of reading a missing document: the security
+    // rules can authorize this query even before the first save exists.
+    const existingSaves = await getDocs(query(
+      collection(db, 'cities'),
+      where('ownerId', '==', user.uid),
+      where(documentId(), '==', safeId),
+    ));
     const basePayload = {
       cityName: clampString(params.cityName, 80, 'Nova Cidade'),
       mayorName: clampString(params.mayorName, 80, 'Prefeito(a)'),
@@ -196,7 +203,7 @@ export async function saveCityToCloud(params: {
       updatedAt: serverTimestamp(),
     };
 
-    if (existingSnap.exists()) {
+    if (!existingSaves.empty) {
       await updateDoc(docRef, basePayload);
     } else {
       await setDoc(docRef, {
